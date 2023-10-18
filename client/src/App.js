@@ -8,12 +8,10 @@ function App() {
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
-      console.log(codeResponse);
-      const tokens = await axios.post("http://localhost:1711/api/auth/google", {
+      const response = await axios.post("http://localhost:1711/api/auth/google", {
         code: codeResponse.code,
       });
-
-      console.log(tokens);
+      console.log(response);
     },
     onError: (errorResponse) => console.log(errorResponse),
   });
