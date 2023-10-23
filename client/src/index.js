@@ -1,14 +1,17 @@
-import React from "react";
+import React, { Suspense } from "react";
+
 import ReactDOM from "react-dom/client";
 import App from "./App";
-
-import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Provider } from "react-redux";
+import { store } from "./redux/app/store";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <GoogleOAuthProvider clientId="699809386971-lhi16el0dg3tk86q8ds1ha32rep68nvi.apps.googleusercontent.com">
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </GoogleOAuthProvider>
+  <React.StrictMode>
+    <Provider store={store}>
+      <Suspense fallback={null}>
+        <App />
+      </Suspense>
+    </Provider>
+  </React.StrictMode>
 );

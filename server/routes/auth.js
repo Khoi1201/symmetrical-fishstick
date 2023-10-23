@@ -7,6 +7,15 @@ const axios = require("axios");
 const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/User");
 
+const getGoogleUserInfor = async (access_token) => {
+  const userInfo = await axios
+    .get("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    })
+    .then((res) => res.data);
+  return userInfo;
+};
+
 const oAuth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
@@ -60,6 +69,7 @@ router.post("/google", async (req, res) => {
         success: true,
         message: "User already logged in with google before",
         accessToken,
+        user
       });
     }
 
@@ -79,16 +89,6 @@ router.post("/google", async (req, res) => {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
-
-  // const userInfo = await axios
-  //   .get("https://www.googleapis.com/oauth2/v3/userinfo", {
-  //     headers: { Authorization: `Bearer ${tokens.access_token}` },
-  //   })
-  //   .then((res) => res.data);
-
-  // console.log(userInfo);
-
-  // res.send(userInfo.name);
 });
 
 module.exports = router;

@@ -1,29 +1,48 @@
 import "./App.css";
-import React from "react";
-import { useGoogleLogin } from "@react-oauth/google";
+import React, { Suspense, useState } from "react";
 
-import axios from "axios";
+import ContextComponent from "./contexts/ContextComponent";
+import { PathnameProvider } from "./contexts/PathnameContext";
+import Router from "./routers/Router";
+
+const AppContainerStyle = {
+  width: "100%",
+  height: "100vh",
+};
 
 function App() {
-  const googleLogin = useGoogleLogin({
-    flow: "auth-code",
-    onSuccess: async (codeResponse) => {
-      const response = await axios.post("http://localhost:1711/api/auth/google", {
-        code: codeResponse.code,
-      });
-      console.log(response);
-    },
-    onError: (errorResponse) => console.log(errorResponse),
-  });
+  const localStorageTheme = localStorage.getItem("theme");
+
+  const [checkIsLogin, setCheckIsLogin] = useState(false);
+
+  const [theme, setTheme] = useState(
+    localStorageTheme !== null && localStorageTheme !== undefined
+      ? localStorageTheme
+      : "dark"
+  );
+
+  const handleChangeTheme = (theme) => {
+    setTheme(theme);
+    localStorage.setItem("theme", theme);
+  };
 
   return (
-    <div>
-      <h2>React Google Login</h2>
-      <br />
-      <br />
-      <button onClick={googleLogin}> Sign in with Google 🚀</button>
-      <></>
-    </div>
+    <ContextComponent.Provider
+      value={{
+        theme,
+        handleChangeTheme,
+        checkIsLogin,
+        setCheckIsLogin,
+      }}
+    >
+      <PathnameProvider>
+        <div style={AppContainerStyle}>
+          <Suspense fallback={null /* loading screen */}>
+            <Router />
+          </Suspense>
+        </div>
+      </PathnameProvider>
+    </ContextComponent.Provider>
   );
 }
 export default App;
