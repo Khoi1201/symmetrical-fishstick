@@ -4,10 +4,18 @@ import Cookies from "js-cookie";
 import tbAuthController from "../api/tb.auth.controler";
 
 export const initialState = {
-  token: "",
-  status: "idle",
+  user: null,
+  authenticated: false,
+  loginStatus: "idle",
   registerStatus: "idle",
 };
+
+export const loadUser = createAsyncThunk("loadUser", async () => {
+  const { token, refreshToken } = await tbAuthController.getUser();
+  
+  Cookies.set("token", token, { expires: 7 });
+  Cookies.set("refreshToken", refreshToken, { expires: 7 });
+});
 
 export const loginAccount = createAsyncThunk("loginAccount", async (data) => {
   const { username, password } = data;
@@ -49,17 +57,31 @@ export const authenticationSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    //loginAccount
+    // loadUser
+    builder.addCase(loadUser.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(loadUser.fulfilled, (state, action) => {
+      state.status = "idle";
+      state.user = action.payload.user;
+      state.authenticated = true;
+    });
+    builder.addCase(loadUser.rejected, (state) => {
+      state.status = "failed";
+      state.profile = [];
+    });
+
+    // loginAccount
     builder.addCase(loginAccount.pending, (state) => {
       state.status = "loading";
     });
     builder.addCase(loginAccount.fulfilled, (state, action) => {
       state.status = "idle";
-      state.token = action.payload;
+      state.user = action.payload.user;
+      state.authenticated = true;
     });
     builder.addCase(loginAccount.rejected, (state) => {
       state.status = "failed";
-      state.token = [];
     });
 
     // registerAccount

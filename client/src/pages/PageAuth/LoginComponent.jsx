@@ -125,7 +125,6 @@ const LoginComponent = ({ setSignup }) => {
           height: "20px",
         }}
       />
-      <span>{"forgot-password"}</span>
 
       <Form.Item>
         <Button htmlType="submit">{loading ? <Spin /> : "login"}</Button>

@@ -13,8 +13,6 @@ const AppContainerStyle = {
 function App() {
   const localStorageTheme = localStorage.getItem("theme");
 
-  const [checkIsLogin, setCheckIsLogin] = useState(false);
-
   const [theme, setTheme] = useState(
     localStorageTheme !== null && localStorageTheme !== undefined
       ? localStorageTheme
@@ -31,8 +29,6 @@ function App() {
       value={{
         theme,
         handleChangeTheme,
-        checkIsLogin,
-        setCheckIsLogin,
       }}
     >
       <PathnameProvider>

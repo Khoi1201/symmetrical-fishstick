@@ -13,9 +13,6 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  googleSub: {
-    type: String,
-  },
   name: {
     type: String,
   },

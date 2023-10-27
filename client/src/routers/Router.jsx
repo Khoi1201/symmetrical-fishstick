@@ -1,21 +1,27 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Cookies from "js-cookie";
 import NotificationBar from "../components/NotificationBar/NotificationBar";
 import ContextComponent from "../contexts/ContextComponent";
 import useWindowDimensions from "../hooks/useWindowDimension";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PageAuth from "../pages/PageAuth";
 import NotFound from "../pages/NotFound";
+import { loadUser } from "../redux/slice/login.slice";
 
 const Router = () => {
   const token = Cookies.get("token");
+  const dispatch = useDispatch();
   const context = useContext(ContextComponent);
   const { width } = useWindowDimensions();
-  const tokenRedux = useSelector((state)=>state.authentication.token.token);
 
-  // const authority = useSelector((state) => state.profile.profile.authority);
+  useEffect(() => {
+    if (token) dispatch(loadUser);
+  });
+  const authenticated = useSelector(
+    (state) => state.authentication.authenticated
+  );
 
   const [menu, setMenu] = useState();
   const [collapsed, setCollapsed] = useState(
@@ -27,7 +33,7 @@ const Router = () => {
   return (
     <BrowserRouter>
       <NotificationBar />
-      {token || tokenRedux ? (
+      {authenticated ? (
         <>Dashboard</>
       ) : (
         <Routes>

@@ -13,7 +13,8 @@ const PageAuth = () => {
 
   const [changeTabs, setChangeTabs] = useState(false);
 
-  const token = Cookies.get("token");
+  const token = Cookies.get("token")
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const PageAuth = () => {
         {!changeTabs ? (
           <LoginComponent setSignup={setChangeTabs} />
         ) : (
-          <SignupComponent />
+          <SignupComponent setSignup={setChangeTabs} />
         )}
       </Col>
     </Row>
