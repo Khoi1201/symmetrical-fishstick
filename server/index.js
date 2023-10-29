@@ -22,7 +22,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/auth", authRouter, (req, res) => {});
+app.use("/api/auth", authRouter);
 // app.use("/api/posts", postRouter);
 
 const PORT = process.env.PORT || 1711;

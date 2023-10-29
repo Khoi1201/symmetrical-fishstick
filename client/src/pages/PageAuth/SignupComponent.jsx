@@ -32,20 +32,15 @@ const SignupComponent = ({ setSignup }) => {
       );
       setIsSignup(false);
     }
-  }, [registerStatus, isSignup , email, password]);
+  }, [registerStatus, isSignup, email, password]);
 
   const onFinish = async (values) => {
-    const email = values.email.trim();
+    const username = values.email.trim();
     const password = values.password.trim();
-    const phone = values.phone.trim();
-    const firstName = values.firstName.trim();
-    const lastName = values.lastName.trim();
+    // const phone = values.phone.trim();
     const payload = {
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
+      username: username,
       password: password,
-      phone: phone,
     };
     dispatch(registerAccount({ payload }));
     setEmail(email);
@@ -68,48 +63,8 @@ const SignupComponent = ({ setSignup }) => {
 
   return (
     <Form onFinish={onFinish}>
-      <span>{"signup"}</span>
+      <span>{"Signup"}</span>
 
-      <Space direction="horizontal">
-        <Col>
-          <Form.Item
-            name="firstName"
-            label={<span>{"first name"}</span>}
-            labelCol={{ span: 24 }}
-            rules={[
-              {
-                required: true,
-                message: "field required",
-              },
-            ]}
-          >
-            <Input
-              type="text"
-              placeholder={"your name"}
-              prefix={<EnvelopeSimple size={18} color="#ADADAD" />}
-            />
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="lastName"
-            label={<span>{"last-name"}</span>}
-            labelCol={{ span: 24 }}
-            rules={[
-              {
-                required: true,
-                message: "field required",
-              },
-            ]}
-          >
-            <Input
-              type="text"
-              placeholder={"your name"}
-              prefix={<EnvelopeSimple size={18} color="#ADADAD" />}
-            />
-          </Form.Item>
-        </Col>
-      </Space>
       <Form.Item
         name="email"
         label={<span>Email</span>}
@@ -132,6 +87,7 @@ const SignupComponent = ({ setSignup }) => {
         ]}
       >
         <Input
+          autoComplete="username"
           type="email"
           placeholder={"your email"}
           prefix={<EnvelopeSimple size={18} color="#ADADAD" />}
@@ -140,7 +96,7 @@ const SignupComponent = ({ setSignup }) => {
 
       <Form.Item
         name="password"
-        label={<span>{"password"}</span>}
+        label={<span>{"Password"}</span>}
         labelCol={{ span: 24 }}
         rules={[
           {
@@ -158,6 +114,7 @@ const SignupComponent = ({ setSignup }) => {
           className="login-input"
           placeholder={"your password"}
           prefix={<Lock size={18} color="#ADADAD" />}
+          autoComplete="new-password"
         />
       </Form.Item>
       <Form.Item
@@ -167,7 +124,7 @@ const SignupComponent = ({ setSignup }) => {
             className="text-12 login-form__label"
             style={{ margin: 0, padding: 0 }}
           >
-            {"confirm password"}
+            {"Confirm Password"}
           </span>
         }
         labelCol={{ span: 24 }}
@@ -192,42 +149,17 @@ const SignupComponent = ({ setSignup }) => {
           className="login-input"
           placeholder={"your password"}
           prefix={<Lock size={18} color="#ADADAD" />}
-        />
-      </Form.Item>
-      <Form.Item
-        name="phone"
-        label={<span>{"phone number"}</span>}
-        labelCol={{ span: 24 }}
-        rules={[
-          {
-            required: true,
-            message: "field required",
-          },
-          () => ({
-            validator(_, value) {
-              var phoneno = /^\d{10,11}$/;
-              if (!value || phoneno.test(value)) {
-                return Promise.resolve();
-              } else {
-                return Promise.reject(new Error("not valid phone"));
-              }
-            },
-          }),
-        ]}
-      >
-        <Input
-          placeholder={"phone number"}
-          prefix={<Phone size={18} color="#ADADAD" />}
+          autoComplete="new-password"
         />
       </Form.Item>
 
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          {"signup"}
+          {"Signup"}
         </Button>
       </Form.Item>
-      <span>{"already have account?"}</span>
-      <span onClick={() => setSignup(false)}>{"login"}</span>
+      <span>{"Already have account? "}</span>
+      <span onClick={() => setSignup(false)}>{"Login"}</span>
     </Form>
   );
 };

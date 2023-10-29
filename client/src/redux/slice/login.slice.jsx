@@ -6,25 +6,36 @@ import tbAuthController from "../api/tb.auth.controler";
 export const initialState = {
   user: null,
   authenticated: false,
-  loginStatus: "idle",
+  status: "idle",
   registerStatus: "idle",
 };
 
 export const loadUser = createAsyncThunk("loadUser", async () => {
-  const { token, refreshToken } = await tbAuthController.getUser();
-  
-  Cookies.set("token", token, { expires: 7 });
-  Cookies.set("refreshToken", refreshToken, { expires: 7 });
+  try {
+    const response = await tbAuthController.getUser();
+    return response.data.user;
+  } catch (error) {
+    Cookies.remove("token");
+    throw new Error("Invalid token");
+  }
 });
 
-export const loginAccount = createAsyncThunk("loginAccount", async (data) => {
-  const { username, password } = data;
-  const token = await tbAuthController.loginEndpoint(username, password);
+export const loginAccount = createAsyncThunk(
+  "loginAccount",
+  async (data, { dispatch }) => {
+    const { username, password } = data;
+    try {
+      const response = await tbAuthController.loginEndpoint(username, password);
+      const accessToken = response.data.accessToken;
+      Cookies.set("token", accessToken, { expires: 7 });
+      await dispatch(loadUser()).unwrap();
 
-  Cookies.set("token", token.token, { expires: 7 });
-  Cookies.set("refreshToken", token.refreshToken, { expires: 7 });
-  return token;
-});
+      return accessToken;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 export const logoutAccount = createAsyncThunk("logoutAccount", () => {
   Cookies.remove("token");
@@ -34,9 +45,12 @@ export const logoutAccount = createAsyncThunk("logoutAccount", () => {
 export const registerAccount = createAsyncThunk(
   "registerAccount",
   async (data) => {
-    const { payload } = data;
-    const response = await tbAuthController.registerUser(payload);
-    return response;
+    try {
+      const { payload } = data;
+      await tbAuthController.registerUser(payload);
+    } catch (error) {
+      console.log(error);
+    }
   }
 );
 
@@ -59,16 +73,17 @@ export const authenticationSlice = createSlice({
   extraReducers: (builder) => {
     // loadUser
     builder.addCase(loadUser.pending, (state) => {
-      state.status = "loading";
+      state.statusLoad = "loading";
     });
     builder.addCase(loadUser.fulfilled, (state, action) => {
-      state.status = "idle";
-      state.user = action.payload.user;
+      state.statusLoad = "idle";
+      state.user = action.payload;
       state.authenticated = true;
     });
     builder.addCase(loadUser.rejected, (state) => {
-      state.status = "failed";
-      state.profile = [];
+      state.statusLoad = "failed";
+      state.authenticated = false;
+      state.user = null;
     });
 
     // loginAccount
@@ -77,8 +92,6 @@ export const authenticationSlice = createSlice({
     });
     builder.addCase(loginAccount.fulfilled, (state, action) => {
       state.status = "idle";
-      state.user = action.payload.user;
-      state.authenticated = true;
     });
     builder.addCase(loginAccount.rejected, (state) => {
       state.status = "failed";

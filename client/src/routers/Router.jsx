@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PageAuth from "../pages/PageAuth";
 import NotFound from "../pages/NotFound";
 import { loadUser } from "../redux/slice/login.slice";
+import ProtectedRoute from "../components/Routing/ProtectedRoute";
 
 const Router = () => {
   const token = Cookies.get("token");
@@ -17,11 +18,8 @@ const Router = () => {
   const { width } = useWindowDimensions();
 
   useEffect(() => {
-    if (token) dispatch(loadUser);
-  });
-  const authenticated = useSelector(
-    (state) => state.authentication.authenticated
-  );
+    if (token) dispatch(loadUser());
+  }, [dispatch, token]);
 
   const [menu, setMenu] = useState();
   const [collapsed, setCollapsed] = useState(
@@ -33,17 +31,15 @@ const Router = () => {
   return (
     <BrowserRouter>
       <NotificationBar />
-      {authenticated ? (
-        <>Dashboard</>
-      ) : (
-        <Routes>
-          {!context?.checkIsLogin && (
-            <Route path="/" element={<Navigate to="/login" replace />}></Route>
-          )}
-          <Route path="/login" element={<PageAuth />} />
-          <Route path="*" element={<NotFound setMenu={setMenu} />} />
-        </Routes>
-      )}
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<PageAuth />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<>Dashboard</>}></Route>
+          <Route path="/about" element={<>About</>}></Route>
+        </Route>
+        <Route path="*" element={<NotFound setMenu={setMenu} />} />
+      </Routes>
     </BrowserRouter>
   );
 };

@@ -2,9 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import ContextComponent from "../../contexts/ContextComponent";
 import Cookies from "js-cookie";
 import { usePathname } from "../../contexts/PathnameContext";
-import { Col, Row, Space } from "antd";
+import { Card, Col, Row, Space } from "antd";
 import LoginComponent from "./LoginComponent";
 import SignupComponent from "./SignupComponent";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
 
 const PageAuth = () => {
   const context = useContext(ContextComponent);
@@ -13,40 +15,30 @@ const PageAuth = () => {
 
   const [changeTabs, setChangeTabs] = useState(false);
 
-  const token = Cookies.get("token")
+  const token = Cookies.get("token");
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (
-      pathname === "/" &&
-      token === undefined &&
-      Cookies.get("is_login" === "true")
-    ) {
-      context?.set("is_login", "checking");
-    }
-  }, [token, pathname, context]);
+  const authenticated = useSelector(
+    (state) => state.authentication.authenticated
+  );
 
-  useEffect(() => {
-    if (context?.checkIsLogin && Cookies.get("is_login") === "checking") {
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 200);
-    }
-  }, [context?.checkIsLogin]);
-
-  return !context?.checkIsLogin ? (
-    <Row align={"middle"} justify={"center"}>
-      <Col span={24}>
+  return !authenticated ? (
+    <Row align={"middle"} justify={"center"} style={{ height: "100vh" }}>
+      <Col span={6}>
         {!changeTabs ? (
-          <LoginComponent setSignup={setChangeTabs} />
+          <Card>
+            <LoginComponent setSignup={setChangeTabs} />
+          </Card>
         ) : (
-          <SignupComponent setSignup={setChangeTabs} />
+          <Card>
+            <SignupComponent setSignup={setChangeTabs} />
+          </Card>
         )}
       </Col>
     </Row>
   ) : (
-    <></>
+    <Navigate to={"/dashboard"} replace={true} />
   );
 };
 

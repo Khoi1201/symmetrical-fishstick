@@ -7,6 +7,7 @@ import { loginAccount } from "../../redux/slice/login.slice";
 
 import { Button, Form, Input, Spin } from "antd";
 import { EnvelopeSimple, Lock } from "phosphor-react";
+import { Typography } from "antd";
 
 const LoginComponent = ({ setSignup }) => {
   const dispatch = useDispatch();
@@ -82,10 +83,10 @@ const LoginComponent = ({ setSignup }) => {
 
   return (
     <Form onFinish={onFinish} fields={fields}>
-      <span>login</span>
+      <span>Login</span>
       <Form.Item
         name={"userName"}
-        label={"email"}
+        label={"Email"}
         labelCol={{ span: 24 }}
         rules={[
           {
@@ -95,13 +96,14 @@ const LoginComponent = ({ setSignup }) => {
         ]}
       >
         <Input
+          autoComplete="username"
           placeholder={"your-email"}
           prefix={<EnvelopeSimple size={18} color="#ADADAD" />}
         />
       </Form.Item>
       <Form.Item
         name={"password"}
-        label={"password"}
+        label={"Password"}
         labelCol={{ span: 24 }}
         rules={[
           {
@@ -112,6 +114,7 @@ const LoginComponent = ({ setSignup }) => {
         ]}
       >
         <Input.Password
+          autoComplete="current-password"
           placeholder={"your-password"}
           prefix={<Lock size={18} color="#ADADAD" />}
         />
@@ -125,12 +128,12 @@ const LoginComponent = ({ setSignup }) => {
           height: "20px",
         }}
       />
-
+      <Typography.Text>Remember Password</Typography.Text>
       <Form.Item>
-        <Button htmlType="submit">{loading ? <Spin /> : "login"}</Button>
+        <Button htmlType="submit">{loading ? <Spin /> : "Login"}</Button>
       </Form.Item>
-      <span>{"dont have account?"}</span>
-      <span onClick={() => setSignup(true)}>{"signup"}</span>
+      <span>{"Don't have account? "}</span>
+      <span onClick={() => setSignup(true)}>{"Signup"}</span>
     </Form>
   );
 };
